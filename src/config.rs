@@ -15,18 +15,20 @@ pub struct ConfigParams
 
 impl ConfigParams
 {
-    pub fn fromFile(filename: &str) -> Result<Self, Error>
+    pub fn fromFile(filename: &std::path::Path) -> Result<Self, Error>
     {
         let mut file = fs::File::open(filename).map_err(
-            |_| {error!(RuntimeError, format!("Failed to open file {}",
-                                              filename))})?;
+            |_| error!(RuntimeError, format!("Failed to open file {}",
+                                              filename.to_string_lossy())))?;
         let mut contents = String::new();
         file.read_to_string(&mut contents).map_err(
-            |_| {error!(RuntimeError,
-                        format!("Failed to read file {}", filename))})?;
+            |_| error!(RuntimeError,
+                        format!("Failed to read file {}",
+                                filename.to_string_lossy())))?;
 
         toml::from_str(&contents).map_err(
-            |e| {error!(RuntimeError,
-                        format!("Failed to parse file {}: {}", filename, e))})
+            |e| error!(RuntimeError,
+                        format!("Failed to parse file {}: {}",
+                                filename.to_string_lossy(), e)))
     }
 }
