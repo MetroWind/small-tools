@@ -46,12 +46,12 @@ identification only; it does not participate in code generation. Then
 you can input the key into your authenticator program of choice. Most
 definitely your program will output 6-digit codes by default. You need
 to change that to 8-digit. You will then need to register that serial
-number of Blizzard website. Here lies the reason why I suspect
+number on Blizzard website. Here lies the reason why I suspect
 Blizzard uses this scheme to maintain compatibility. For hardward OTP
 dangles, the service provider would want to maintain a map between
 keys and serial numbers, and the user only sees the serial number.
 Blizzard probably wanted to provide a “smooth” experience for users
-who transition to using the authenticator app.
+who transition to the authenticator app.
 
 == Technical notes
 
