@@ -1,5 +1,7 @@
 <svg viewBox="-82 -12 424 264" width="424" height="264"
 xmlns="http://www.w3.org/2000/svg">
+<rect x="-82" y="-12" width="100%" height="100%" fill="white" />
+
 <line x1="0" y1="-10" x2="0" y2="130"
 stroke="black" stroke-width="2" />
 <line x1="80" y1="-10" x2="80" y2="130"

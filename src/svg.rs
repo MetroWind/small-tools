@@ -20,14 +20,16 @@ impl<'a> SVGDrawer<'a>
 
     pub fn header(&self, bbox: &geometry::Region) -> String
     {
+        let x0 = bbox.xmin - self.config.canvas_padding;
+        let y0 = bbox.ymin - self.config.canvas_padding;
+        let width = bbox.xmax - bbox.xmin + 2.0 * self.config.canvas_padding;
+        let height = bbox.ymax - bbox.ymin + 2.0 * self.config.canvas_padding;
         format!(r#"<svg viewBox="{} {} {} {}" width="{}" height="{}"
-xmlns="http://www.w3.org/2000/svg">"#,
-                bbox.xmin - self.config.canvas_padding,
-                bbox.ymin - self.config.canvas_padding,
-                bbox.xmax - bbox.xmin + 2.0 * self.config.canvas_padding,
-                bbox.ymax - bbox.ymin + 2.0 * self.config.canvas_padding,
-                bbox.xmax - bbox.xmin + 2.0 * self.config.canvas_padding,
-                bbox.ymax - bbox.ymin + 2.0 * self.config.canvas_padding)
+xmlns="http://www.w3.org/2000/svg">
+<rect x="{}" y="{}" width="100%" height="100%" fill="{}" />
+"#,
+                x0, y0, width, height, width, height, x0, y0,
+                self.config.color_bg)
     }
 
     pub fn footer(&self) -> String
