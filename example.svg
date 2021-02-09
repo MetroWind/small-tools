@@ -1,0 +1,84 @@
+<svg viewBox="-82 -12 424 264" width="424" height="264"
+xmlns="http://www.w3.org/2000/svg">
+<line x1="0" y1="-10" x2="0" y2="130"
+stroke="black" stroke-width="2" />
+<line x1="80" y1="-10" x2="80" y2="130"
+stroke="black" stroke-width="2" />
+<line x1="0" y1="0" x2="80" y2="0"
+stroke="black" stroke-width="2" />
+<line x1="0" y1="20" x2="4" y2="20"
+stroke="black" stroke-width="2" />
+<line x1="76" y1="20" x2="80" y2="20"
+stroke="black" stroke-width="2" />
+<line x1="0" y1="40" x2="4" y2="40"
+stroke="black" stroke-width="2" />
+<line x1="76" y1="40" x2="80" y2="40"
+stroke="black" stroke-width="2" />
+<text x="-7" y="15" text-anchor="end" font-size="14"
+font-family="'Rec Mono Duotone', 'IBM Plex Mono', Iosevka, Inconsolata, monospace" fill="black">z</text>
+<text x="2.8000000000000003" y="15" text-anchor="start" font-size="14"
+font-family="'Rec Mono Duotone', 'IBM Plex Mono', Iosevka, Inconsolata, monospace" fill="black">aaa</text>
+<line x1="0" y1="60" x2="80" y2="60"
+stroke="black" stroke-width="2" />
+<text x="-7" y="75" text-anchor="end" font-size="14"
+font-family="'Rec Mono Duotone', 'IBM Plex Mono', Iosevka, Inconsolata, monospace" fill="black">x</text>
+<text x="2.8000000000000003" y="75" text-anchor="start" font-size="14"
+font-family="'Rec Mono Duotone', 'IBM Plex Mono', Iosevka, Inconsolata, monospace" fill="black">123</text>
+<text x="82.8" y="75" text-anchor="start" font-size="14"
+font-family="'Rec Mono Duotone', 'IBM Plex Mono', Iosevka, Inconsolata, monospace" fill="black">0x1000</text>
+<line x1="0" y1="80" x2="80" y2="80"
+stroke="black" stroke-width="2" />
+<line x1="0" y1="100" x2="4" y2="100"
+stroke="black" stroke-width="2" />
+<line x1="76" y1="100" x2="80" y2="100"
+stroke="black" stroke-width="2" />
+<text x="-7" y="95" text-anchor="end" font-size="14"
+font-family="'Rec Mono Duotone', 'IBM Plex Mono', Iosevka, Inconsolata, monospace" fill="black">y</text>
+<text x="2.8000000000000003" y="95" text-anchor="start" font-size="14"
+font-family="'Rec Mono Duotone', 'IBM Plex Mono', Iosevka, Inconsolata, monospace" fill="black">234</text>
+<text x="82.8" y="95" text-anchor="start" font-size="14"
+font-family="'Rec Mono Duotone', 'IBM Plex Mono', Iosevka, Inconsolata, monospace" fill="black">0x1001</text>
+<line x1="0" y1="120" x2="80" y2="120"
+stroke="black" stroke-width="2" />
+<line x1="0" y1="130" x2="0" y2="170"
+stroke="black" stroke-width="2" stroke-dasharray="5, 5" />
+<line x1="80" y1="130" x2="80" y2="170"
+stroke="black" stroke-width="2" stroke-dasharray="5, 5" />
+<line x1="0" y1="170" x2="0" y2="250"
+stroke="black" stroke-width="2" />
+<line x1="80" y1="170" x2="80" y2="250"
+stroke="black" stroke-width="2" />
+<line x1="0" y1="180" x2="80" y2="180"
+stroke="black" stroke-width="2" />
+<line x1="0" y1="200" x2="4" y2="200"
+stroke="black" stroke-width="2" />
+<line x1="76" y1="200" x2="80" y2="200"
+stroke="black" stroke-width="2" />
+<text x="-7" y="195" text-anchor="end" font-size="14"
+font-family="'Rec Mono Duotone', 'IBM Plex Mono', Iosevka, Inconsolata, monospace" fill="black">yp</text>
+<text x="2.8000000000000003" y="195" text-anchor="start" font-size="14"
+font-family="'Rec Mono Duotone', 'IBM Plex Mono', Iosevka, Inconsolata, monospace" fill="black">0x1001</text>
+<line x1="0" y1="220" x2="80" y2="220"
+stroke="black" stroke-width="2" />
+<line x1="0" y1="240" x2="80" y2="240"
+stroke="black" stroke-width="2" />
+<path d="M 84,190 C 240,190 240,90 160,90" stroke="black"
+stroke-width="2" fill="none" />
+<line x1="160" y1="90" x2="166.9282032302755" y2="86"
+stroke="black" stroke-width="2" />
+<line x1="160" y1="90" x2="166.9282032302755" y2="94"
+stroke="black" stroke-width="2" />
+
+<path d="M 250,0 C 260,0 250,60 260,60" stroke="black"
+stroke-width="2" fill="none" />
+<path d="M 250,120 C 260,120 250,60 260,60" stroke="black"
+stroke-width="2" fill="none" />
+<text x="267" y="63.5" text-anchor="start" font-size="14"
+font-family="'Rec Mono Duotone', 'IBM Plex Mono', Iosevka, Inconsolata, monospace" fill="black">main</text>
+<path d="M 250,180 C 260,180 250,210 260,210" stroke="black"
+stroke-width="2" fill="none" />
+<path d="M 250,240 C 260,240 250,210 260,210" stroke="black"
+stroke-width="2" fill="none" />
+<text x="267" y="213.5" text-anchor="start" font-size="14"
+font-family="'Rec Mono Duotone', 'IBM Plex Mono', Iosevka, Inconsolata, monospace" fill="black">f</text>
+</svg>
