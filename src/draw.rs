@@ -72,6 +72,8 @@ impl<'a> Canvas<'a>
         self.result.push(self.drawer.line(
             (anchor.0, anchor.1), (anchor.0 + self.config.cell_width, anchor.1)));
 
+        let mut has_label = false;
+        let mut has_address = false;
         {
             let mut y = anchor.1;
 
@@ -102,6 +104,7 @@ impl<'a> Canvas<'a>
                         &cell.label,
                         (anchor.0 - self.config.font_size * 0.5, text_y),
                         svg::TextAlign::Right));
+                    has_label = true;
                 }
                 // Draw cell content
                 if !cell.content.is_empty()
@@ -119,6 +122,7 @@ impl<'a> Canvas<'a>
                         (anchor.0 + self.config.cell_width
                          + self.config.font_size * 0.2, text_y),
                         svg::TextAlign::Left));
+                    has_address = true;
                 }
 
                 y += cell.size as f64 * self.config.cell_height;
@@ -130,8 +134,22 @@ impl<'a> Canvas<'a>
         }
 
         self.bbox.enlarge(&geometry::Region{
-            xmin: anchor.0 - self.config.cell_width,
-            xmax: anchor.0 + self.config.cell_width,
+            xmin: if has_label
+            {
+                anchor.0 - self.config.cell_width
+            }
+            else
+            {
+                anchor.0
+            },
+            xmax: if has_address
+            {
+                anchor.0 + 2.0 * self.config.cell_width
+            }
+            else
+            {
+                anchor.0 + self.config.cell_width
+            },
             ymin: -self.config.cell_height * 0.5 + anchor.1,
             ymax: self.config.cell_height * 0.5 +
                 scope.size() as f64 * self.config.cell_height + anchor.1,
