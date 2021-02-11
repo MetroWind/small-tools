@@ -10,7 +10,7 @@ use crate::draw;
 
 pub struct Graph
 {
-    config: config::Config,
+    pub config: config::Config,
     column: layout::Column,
 }
 
