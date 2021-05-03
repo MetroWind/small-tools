@@ -3,7 +3,7 @@ on: [push]
 name: Build head
 
 jobs:
-  build:
+  build-linux:
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -20,5 +20,24 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: amazon-beancount
+          name: amazon-beancount-linux
+          path: target/release/amazon-beancount
+  build-mac:
+    name: Build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+
+      - run: strip target/release/amazon-beancount
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: amazon-beancount-macos
           path: target/release/amazon-beancount
