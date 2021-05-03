@@ -1,0 +1,16 @@
+A simple program to help logging Amazon orders into a
+http://furius.ca/beancount/[Beancount] file. The intended workflow is
+this:
+
+. Download the order records from
+https://www.amazon.com/gp/b2b/reports
+. Run this program with the downloaded CSV file as input. If you want
+to only look at orders after a certain order, use the `--after`
+option.
+. The program will output one order, in Beancount format, and give you
+the URL of the order, you copy this entry into your beancount file,
+and look at the order page if you need more info.
+. Repeat the last step until the last order.
+
+I would love to automate this, but there is no way (that is not a
+hack) to obtain order history automatically from Amazon.
