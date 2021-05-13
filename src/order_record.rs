@@ -44,13 +44,28 @@ fn stripDollar(price: &str) -> String
     }
 }
 
+// Convert “$1.23” to float 1.23. Return 0 if string is empty.
+fn priceStr2Float(price: &str) -> Result<f64, Error>
+{
+    let p = stripDollar(price);
+    if p.is_empty()
+    {
+        Ok(0.0)
+    }
+    else
+    {
+        p.parse().map_err(|_| rterr!("Failed to parse '{}' into float", price))
+    }
+}
+
+#[derive(Clone)]
 pub struct Order
 {
-    date: Date<Local>,
+    pub date: Date<Local>,
     pub order_number: String,
-    tax: String,
-    shipping: String,
-    sub_total: String,
+    tax: f64,
+    shipping: f64,
+    sub_total: f64,
 }
 
 impl Order
@@ -58,12 +73,13 @@ impl Order
     fn fromCSVRow(row: csv::StringRecord) -> Result<Self, Error>
     {
         let err = rterr!("Invalid CSV");
+
         Ok(Self {
             date: dateFromDumbSlash(row.get(0).ok_or_else(|| err.clone())?)?,
             order_number: row.get(1).ok_or_else(|| err.clone())?.to_owned(),
-            tax: stripDollar(row.get(19).ok_or_else(|| err.clone())?),
-            shipping: stripDollar(row.get(16).ok_or_else(|| err.clone())?),
-            sub_total: stripDollar(row.get(20).ok_or_else(|| err.clone())?),
+            tax: priceStr2Float(row.get(19).ok_or_else(|| err.clone())?)?,
+            shipping: priceStr2Float(row.get(16).ok_or_else(|| err.clone())?)?,
+            sub_total: priceStr2Float(row.get(20).ok_or_else(|| err.clone())?)?,
         })
     }
 
@@ -93,18 +109,29 @@ impl Order
             format!("  order-number: {}", self.order_number));
         lines.push(
             format!("  {}", config.account_expense));
-        if self.shipping != "0.00"
+        if self.shipping != 0.0
         {
             lines.push(
-                format!("  {} {} USD", config.account_shipping, self.shipping));
+                format!("  {} {:.2} USD", config.account_shipping,
+                        self.shipping));
         }
-        if self.tax != "0.00"
+        if self.tax != 0.0
         {
             lines.push(
-                format!("  {} {} USD", config.account_tax, self.tax));
+                format!("  {} {:.2} USD", config.account_tax, self.tax));
         }
         lines.push(
-            format!("  {} -{} USD", config.account_credit, self.sub_total));
+            format!("  {} -{:.2} USD", config.account_credit, self.sub_total));
         lines.join("\n")
+    }
+}
+
+impl std::ops::AddAssign for Order
+{
+    fn add_assign(&mut self, other: Self)
+    {
+        self.shipping += other.shipping;
+        self.sub_total += other.sub_total;
+        self.tax += other.tax;
     }
 }

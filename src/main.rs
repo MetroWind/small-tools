@@ -1,5 +1,6 @@
 #![allow(non_snake_case)]
 use std::io::prelude::*;
+use std::collections::HashMap;
 
 use clap;
 
@@ -9,6 +10,7 @@ mod order_record;
 mod config;
 
 use error::Error;
+use order_record::Order;
 
 fn pressAnyKeyToContinue()
 {
@@ -35,7 +37,7 @@ fn main() -> Result<(), Error>
         .get_matches();
 
     let conf = config::Config::default();
-    let orders = order_record::Order::fromCSV(opts.value_of("input").unwrap())?;
+    let orders = Order::fromCSV(opts.value_of("input").unwrap())?;
     let mut start_from: usize = 0;
     if let Some(after) = opts.value_of("after")
     {
@@ -48,7 +50,25 @@ fn main() -> Result<(), Error>
             }
         }
     }
+
+    // Multiple items in the same order are sperated in the CSV.
+    // Combine them.
+    let mut seen_orders: HashMap<String, Order> = HashMap::new();
     for order in &orders[start_from..]
+    {
+        if let Some(seen_order) = seen_orders.get_mut(&order.order_number)
+        {
+            *seen_order += order.clone();
+        }
+        else
+        {
+            seen_orders.insert(order.order_number.clone(), order.clone());
+        }
+    }
+
+    let mut orders: Vec<&Order> = seen_orders.values().collect();
+    orders.sort_by_key(|o| o.date);
+    for order in orders
     {
         println!("Next order:\n");
         println!("{}", order.beancountEntry(&conf));
