@@ -1,0 +1,11 @@
+= Telegram Bot Controller
+
+A simple program to send messages from a Telegram bot.
+
+== Usage
+
+See the `--help` message.
+
+When running without argument, it reads a message from stdin and send
+it to you (“you” are defined by the `notify_to` key in the config
+file).
