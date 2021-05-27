@@ -1,0 +1,17 @@
+<graph>
+  <column>
+    <scope name="main">
+      <cell label="z" size="3">aaa</cell>
+      <cell label="x" address="0x1000" size="1">123</cell>
+      <cell label="y" address="0x1001" size="2">234</cell>
+    </scope>
+    <scope name="f">
+      <cell label="yp" size="2">0x1001</cell>
+      <cell />
+    </scope>
+    <pointer>
+      <from scope="f" cell="yp" />
+      <to scope="main" cell="y" />
+    </pointer>
+  </column>
+</graph>
