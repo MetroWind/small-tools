@@ -1,0 +1,75 @@
+= Battle.net Auth Requester
+MetroWind
+
+A simple tool to request authenticator key-serial pair from Blizzard.
+
+== Introduction
+
+Blizzard uses the usual
+https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm[TOTP]
+scheme for its authenticator. The usage of TOTP is usually two parts:
+the inital setup, and code generation. The former is the process of
+getting a key from the account provider, and setting up the latter;
+while the latter is the usual practice of generating a code
+periodically. This program handlers the majority of the first part.
+
+Usually a good account provider directly gives you a key (probably in
+the form of a QR code image) that you can input to your authenticator
+program. But Blizzard uses a somewhat convoluted method to hide the
+key from the user. The user only sees a “serial number”. I am not sure
+exactly why it does it this way, but my guess is that they want to
+maintain compatibility with the hardware OTP that they released
+before. Anyway It does prevent the user from using a general-purpose
+authenticator program such as https://cooperrs.de/otpauth.html[this]
+(I am obviously not the author. It is just a really good app).
+
+== Usage
+
+----
+USAGE:
+    battle-net-auth [OPTIONS] <USER>
+
+FLAGS:
+    -h, --help       Prints help information
+    -V, --version    Prints version information
+
+OPTIONS:
+        --qr-code <FILE>    Generate a QR code at FILE.
+
+ARGS:
+    <USER>    User login name of the account
+----
+
+Run with your user name, and it will output a serial number and a key
+(either as an URI or a QR code). The user name is for your
+identification only; it does not participate in code generation. Then
+you can input the key into your authenticator program of choice. Most
+definitely your program will output 6-digit codes by default. You need
+to change that to 8-digit. You will then need to register that serial
+number on Blizzard website. Here lies the reason why I suspect
+Blizzard uses this scheme to maintain compatibility. For hardward OTP
+dangles, the service provider would want to maintain a map between
+keys and serial numbers, and the user only sees the serial number.
+Blizzard probably wanted to provide a “smooth” experience for users
+who transition to the authenticator app.
+
+== Technical notes
+
+The process of requesting a authenticator is reverse-engineered and
+documented in
+https://wowwiki.fandom.com/wiki/Battle.net_Mobile_Authenticator_Specification[here],
+and there is a pretty good implementation of that in
+https://github.com/jleclanche/python-bna[here] (where I shamelessly
+ported some code from). Basically the process involves an RSA
+encryption and a symmetric decryption.
+
+1. The client constructs a binary request payload, in which encodes a
+37-byte https://en.wikipedia.org/wiki/One-time_pad[one-time pad],
+which is just random bytes.
+2. The payload is RSA-encrypted with a known modulus and exponent
+(that is the public key from Blizzard), and is sent to Blizzard.
+3. Blizzard generates a TOTP key and a serial number, and encrypts
+them with the pad from the client by XORing them. It sends the
+encrypted data to the client as response.
+4. The client decrypts the response by XORing the response again with
+the one-time pad, and recovers the key and serial number.
