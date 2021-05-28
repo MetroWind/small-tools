@@ -34,7 +34,7 @@ pub trait MessageHandler
 
     fn listen(&self) where Self: std::marker::Sync
     {
-        let mut rt = tokio::runtime::Runtime::new().unwrap();
+        let rt = tokio::runtime::Runtime::new().unwrap();
         let api = bot::Api::new(&self.config().token);
         let mut stream = api.stream();
         while let Some(update) = rt.block_on(async{ stream.next().await })

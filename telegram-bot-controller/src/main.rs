@@ -41,7 +41,7 @@ fn sendStdin(conf: &config::ConfigParams) -> Result<(), Error>
             |_| error!(RuntimeError, "Failed to read stdin"))?;
 
         let api = bot::Api::new(&conf.token);
-        let mut rt = tokio::runtime::Runtime::new().unwrap();
+        let rt = tokio::runtime::Runtime::new().unwrap();
         rt.block_on(telegram::sendMessage(&api, content, bot::types::UserId::new(uid)))?;
         Ok(())
     }
