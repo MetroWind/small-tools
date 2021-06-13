@@ -70,6 +70,17 @@ pub struct Order
 
 impl Order
 {
+    pub fn new() -> Self
+    {
+        Self {
+            date: Local::today(),
+            order_number: String::new(),
+            tax: 0.0,
+            shipping: 0.0,
+            sub_total: 0.0,
+        }
+    }
+
     fn fromCSVRow(row: csv::StringRecord) -> Result<Self, Error>
     {
         let err = rterr!("Invalid CSV");

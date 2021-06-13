@@ -1,6 +1,5 @@
 #![allow(non_snake_case)]
 use std::io::prelude::*;
-use std::collections::HashMap;
 
 use clap;
 
@@ -16,6 +15,14 @@ fn pressAnyKeyToContinue()
 {
     println!("Press any key to continue...");
     std::io::stdin().read(&mut [0u8]).unwrap();
+}
+
+fn printOrder(order: &Order, conf: &config::Config)
+{
+    println!("Next order:\n");
+    println!("{}", order.beancountEntry(conf));
+    println!("\nURL: {}\n", order.url());
+    pressAnyKeyToContinue();
 }
 
 fn main() -> Result<(), Error>
@@ -37,7 +44,7 @@ fn main() -> Result<(), Error>
         .get_matches();
 
     let conf = config::Config::default();
-    let orders = Order::fromCSV(opts.value_of("input").unwrap())?;
+    let mut orders = Order::fromCSV(opts.value_of("input").unwrap())?;
     let mut start_from: usize = 0;
     if let Some(after) = opts.value_of("after")
     {
@@ -52,29 +59,25 @@ fn main() -> Result<(), Error>
     }
 
     // Multiple items in the same order are sperated in the CSV.
-    // Combine them.
-    let mut seen_orders: HashMap<String, Order> = HashMap::new();
-    for order in &orders[start_from..]
+    // Combine them and print. This assumes that items in the same
+    // order are consequtive in the CSV.
+    let mut last_order = Order::new();
+    for order in orders.drain(start_from..)
     {
-        if let Some(seen_order) = seen_orders.get_mut(&order.order_number)
+        if order.order_number == last_order.order_number
         {
-            *seen_order += order.clone();
+            last_order += order.clone();
         }
         else
         {
-            seen_orders.insert(order.order_number.clone(), order.clone());
+            if !last_order.order_number.is_empty()
+            {
+                printOrder(&last_order, &conf);
+            }
+            last_order = order;
         }
     }
-
-    let mut orders: Vec<&Order> = seen_orders.values().collect();
-    orders.sort_by_key(|o| o.date);
-    for order in orders
-    {
-        println!("Next order:\n");
-        println!("{}", order.beancountEntry(&conf));
-        println!("\nURL: {}\n", order.url());
-        pressAnyKeyToContinue();
-    }
+    printOrder(&last_order, &conf);
     println!("All done.");
     Ok(())
 }
