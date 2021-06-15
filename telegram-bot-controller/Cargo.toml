@@ -8,7 +8,7 @@ edition = "2018"
 lto = true
 
 [dependencies]
-telegram-bot = ">=0.7"
+telegram-bot = { git = "https://github.com/telegram-rs/telegram-bot", branch = "main"}
 serde = { version = ">=1.0", features = ["derive"] }
 clap = ">=2.33"
 toml = ">=0.5"
