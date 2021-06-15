@@ -83,7 +83,7 @@ fn main()
 {
     stderrlog::new().init().unwrap();
     let opts = clap::App::new("Telegram bot control")
-        .version("0.1")
+        .version("0.1.1")
         .author("MetroWind <chris.corsair@gmail.com>")
         .about("Control a telegram bot.")
         .arg(clap::Arg::with_name("config")

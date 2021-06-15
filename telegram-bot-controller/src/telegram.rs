@@ -13,7 +13,8 @@ pub async fn sendMessage(api: &bot::Api, msg: String, to: bot::UserId)
     -> Result<bot::types::Message, Error>
 {
     let post = api.send(
-        SendMessage::new(to, msg).parse_mode(bot::types::ParseMode::Markdown))
+        SendMessage::new(to, msg).parse_mode(bot::types::ParseMode::Markdown)
+            .disable_preview())
         .await.map_err(|_| error!(RuntimeError, "Failed to send message"))?;
     if let bot::types::MessageOrChannelPost::Message(msg) = post
     {
