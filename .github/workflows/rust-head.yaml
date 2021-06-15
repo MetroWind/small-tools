@@ -4,7 +4,7 @@ name: Build head
 
 jobs:
   build-linux:
-    name: Build
+    name: Build (Linux)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -18,7 +18,7 @@ jobs:
           name: bin-linux
           path: bin
   build-mac:
-    name: Build
+    name: Build (Mac)
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
