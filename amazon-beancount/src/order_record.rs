@@ -86,11 +86,17 @@ impl Order
         let err = rterr!("Invalid CSV");
 
         Ok(Self {
-            date: dateFromDumbSlash(row.get(0).ok_or_else(|| err.clone())?)?,
+            date: dateFromDumbSlash(row.get(0).ok_or_else(|| err.clone())?)
+                .map_err(|e| rterr!("Failed to parse date (column 0): {}", e))?,
             order_number: row.get(1).ok_or_else(|| err.clone())?.to_owned(),
-            tax: priceStr2Float(row.get(19).ok_or_else(|| err.clone())?)?,
-            shipping: priceStr2Float(row.get(16).ok_or_else(|| err.clone())?)?,
-            sub_total: priceStr2Float(row.get(20).ok_or_else(|| err.clone())?)?,
+            tax: priceStr2Float(row.get(19).ok_or_else(|| err.clone())?)
+                .map_err(|e| rterr!("Failed to parse tax (column 19): {}", e))?,
+            shipping: priceStr2Float(row.get(16).ok_or_else(|| err.clone())?)
+                .map_err(|e| rterr!("Failed to parse shipping (column 16): {}",
+                                    e))?,
+            sub_total: priceStr2Float(row.get(20).ok_or_else(|| err.clone())?)
+                .map_err(
+                    |e| rterr!("Failed to parse total (column 20): {}", e))?,
         })
     }
 
@@ -99,10 +105,11 @@ impl Order
         // This skips the first line by default.
         let mut csv_reader = csv::Reader::from_path(filename).map_err(
             |_| rterr!("Failed to read CSV file: {}", filename))?;
-        csv_reader.records().map(
-            |row| Self::fromCSVRow(
-                row.map_err(|_| rterr!("Failed to read a CSV row."))?))
-            .collect()
+        csv_reader.records().map(|row_maybe| {
+            let row = row_maybe.map_err(
+                |_| rterr!("Failed to read a CSV row."))?;
+            Self::fromCSVRow(row.clone()).map_err(|e| rterr!("{}: {:?}", e, row))
+        }).collect()
     }
 
     pub fn url(&self) -> String
