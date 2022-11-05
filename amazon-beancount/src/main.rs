@@ -27,30 +27,29 @@ fn printOrder(order: &Order, conf: &config::Config)
 
 fn main() -> Result<(), Error>
 {
-    let opts = clap::App::new("Amazon order history to beancount inspector")
+    let opts = clap::Command::new("Amazon order history to beancount inspector")
         .version("0.0.1")
         .author("MetroWind <chris.corsair@gmail.com>")
         .arg(clap::Arg::new("after")
-            .short('a')
-            .long("after")
-            .value_name("ORDER")
-            .about("Only find orders placed after ORDER.")
-            .takes_value(true))
+             .short('a')
+             .long("after")
+             .value_name("ORDER")
+             .help("Only find orders placed after ORDER."))
         .arg(clap::Arg::new("input")
-             .about("The order record CSV file. You can acquire this file from https://www.amazon.com/gp/b2b/reports.")
+             .help("The order record CSV file. You can acquire this file from https://www.amazon.com/gp/b2b/reports.")
              .required(true)
              .value_name("FILE")
-            .index(1))
+             .index(1))
         .get_matches();
 
     let conf = config::Config::default();
-    let mut orders = Order::fromCSV(opts.value_of("input").unwrap())?;
+    let mut orders = Order::fromCSV(opts.get_one::<String>("input").unwrap())?;
     let mut start_from: usize = 0;
-    if let Some(after) = opts.value_of("after")
+    if let Some(after) = opts.get_one::<String>("after")
     {
         for i in 0..orders.len()
         {
-            if orders[i].order_number == after
+            if &orders[i].order_number == after
             {
                 start_from = i + 1;
                 break;

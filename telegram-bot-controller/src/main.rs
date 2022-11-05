@@ -82,17 +82,16 @@ fn findConfigFile() -> Option<PathBuf>
 fn main()
 {
     stderrlog::new().init().unwrap();
-    let opts = clap::App::new("Telegram bot control")
+    let opts = clap::Command::new("Telegram bot control")
         .version("0.1.1")
         .author("MetroWind <chris.corsair@gmail.com>")
         .about("Control a telegram bot.")
-        .arg(clap::Arg::with_name("config")
-             .short("c")
+        .arg(clap::Arg::new("config")
+             .short('c')
              .long("config")
              .value_name("FILE")
-             .help("Location of config file. Default: ~/.config/telegram-bot-control.toml or /etc/telegram-bot-control.toml")
-             .takes_value(true))
-        .subcommand(clap::App::new("get-uid")
+             .help("Location of config file. Default: ~/.config/telegram-bot-control.toml or /etc/telegram-bot-control.toml"))
+        .subcommand(clap::Command::new("get-uid")
                     .about("Get user ID"))
         .get_matches();
 
@@ -100,7 +99,7 @@ fn main()
     {
         path
     }
-    else if let Some(config) = opts.value_of("config")
+    else if let Some(config) = opts.get_one::<String>("config")
     {
         if let Ok(path) = PathBuf::from_str(config)
         {

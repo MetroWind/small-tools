@@ -14,5 +14,5 @@ rand = { version = ">=0.7", std = true }
 reqwest = { version = ">=0.10", features = ["blocking"] }
 data-encoding = ">=2.3"
 qrcode = ">=0.12"
-image = ">=0.23"
-clap = ">=2.33"
+image = "~0.23"                 # qrcode doesn't support image > 0.23. :-(
+clap = ">=4"
