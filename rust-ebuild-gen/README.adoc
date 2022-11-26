@@ -1,0 +1,6 @@
+= Ebuild Generator for Rust Programs
+
+The ebuild of a Rust program usually involves filling the name of
+version of all the dependencies. This generator reads a `Cargo.lock`
+(from the working directory) file and output lines that are suitable
+to be the value of the `CRATES` variable in a ebuild.
