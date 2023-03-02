@@ -1,0 +1,15 @@
+[package]
+name = "triangulation"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "triangulation"
+path = "src/lib.rs"
+
+[[bin]]
+name = "test"
+path = "src/bin.rs"
+
+[dependencies]
+rand = ">=0.8"
