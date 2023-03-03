@@ -24,5 +24,11 @@ fn main()
     }
 
     let trii = tri::triBowyerWatson(ps.drain(..), &region);
-    println!("{}", trii.debugSVG());
+    let svg_triangles = trii.debugSVGTriangles();
+    let v = tri::Voronoi::fromTriangulation(trii);
+    println!("{}", v.debugSVGHeader());
+    println!("{}", svg_triangles);
+    println!("{}", v.debugSVGPolygons());
+    println!("{}", v.debugSVGPoints());
+    println!("{}", v.debugSVGFooter());
 }

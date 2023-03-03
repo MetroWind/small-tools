@@ -2,7 +2,7 @@
 
 use std::collections::HashSet;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone)]
 #[cfg_attr(test, derive(Debug))]
 pub struct Point
 {
@@ -23,7 +23,7 @@ impl Point
     }
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone)]
 #[cfg_attr(test, derive(Debug))]
 struct Circle
 {
@@ -48,8 +48,11 @@ pub struct Rect
     pub height: f64,
 }
 
-type Edge = (usize, usize);
-type Triangle = [usize; 3];
+type PointIndex = usize;
+type TriangleIndex = usize;
+type Edge = (PointIndex, PointIndex);
+type Triangle = [PointIndex; 3];
+type Polygon = Vec<Point>;
 
 fn makeTriangle(i: usize, j: usize, k: usize) -> Triangle
 {
@@ -123,6 +126,7 @@ pub struct Triangulation
 {
     points: Vec<Point>,
     triangles: Vec<Triangle>,
+    edges: Vec<Edge>,
 }
 
 fn makeEdge(p1: usize, p2: usize) -> Edge
@@ -139,7 +143,7 @@ fn makeEdge(p1: usize, p2: usize) -> Edge
 
 fn drawSVGLine(p1: &Point, p2: &Point) -> String
 {
-    format!(r#"<line x1="{}" x2="{}" y1="{}" y2="{}" stroke="black" stroke-width="1"/>"#,
+    format!(r##"<line x1="{}" x2="{}" y1="{}" y2="{}" stroke="#e0e0e0" stroke-width="1"/>"##,
             p1.x, p2.x, p1.y, p2.y)
 }
 
@@ -160,37 +164,95 @@ impl Triangulation
         let mut lines = Vec::new();
         lines.push(format!(r#"<svg version="1.1" viewBox="{} {} {} {}"
 xmlns="http://www.w3.org/2000/svg">"#, xmin, ymin, xmax - xmin, ymax - ymin));
-        let mut edges: HashSet<Edge> = HashSet::new();
-        for tri in &self.triangles
-        {
-            let edge = makeEdge(tri[0], tri[1]);
-            if !edges.contains(&edge)
-            {
-                lines.push(drawSVGLine(&self.points[edge.0],
-                                       &self.points[edge.1]));
-                edges.insert(edge);
-            }
-            let edge = makeEdge(tri[1], tri[2]);
-            if !edges.contains(&edge)
-            {
-                lines.push(drawSVGLine(&self.points[edge.0],
-                                       &self.points[edge.1]));
-                edges.insert(edge);
-            }
-            let edge = makeEdge(tri[2], tri[0]);
-            if !edges.contains(&edge)
-            {
-                lines.push(drawSVGLine(&self.points[edge.0],
-                                       &self.points[edge.1]));
-                edges.insert(edge);
-            }
-        }
+        lines.push(self.debugSVGTriangles());
         for p in &self.points
         {
             lines.push(drawPoint(p));
         }
         lines.push("</svg>".to_owned());
         lines.join("\n")
+    }
+
+    pub fn debugSVGTriangles(&self) -> String
+    {
+        let lines: Vec<String> = self.edges.iter().map(
+            |edge| drawSVGLine(&self.points[edge.0], &self.points[edge.1]))
+        .collect();
+        lines.join("\n")
+    }
+
+    fn trisWithPoint(&self, p: PointIndex) -> Vec<TriangleIndex>
+    {
+        let mut tris = Vec::new();
+        for ti in 0..self.triangles.len()
+        {
+            if self.triangles[ti].contains(&p)
+            {
+                tris.push(ti);
+            }
+        }
+        tris
+    }
+
+    fn triHasEdge(&self, tri: TriangleIndex, edge: Edge) -> bool
+    {
+        let t = self.triangles[tri];
+        t.contains(&edge.0) && t.contains(&edge.1)
+    }
+
+    fn trisWithPointOrdered(&self, p: PointIndex) -> Vec<TriangleIndex>
+    {
+        let tris = self.trisWithPoint(p);
+        let mut result = Vec::with_capacity(tris.len());
+        result.push(tris[0]);
+        let mut ti = tris[0];
+        let tri = self.triangles[ti];
+        let (mut edge, end_edge) = if tri[0] == p
+        {
+            ((p, tri[1]), (p, tri[2]))
+        }
+        else if tri[1] == p
+        {
+            ((p, tri[0]), (p, tri[2]))
+        }
+        else
+        {
+            ((p, tri[0]), (p, tri[1]))
+        };
+
+        loop
+        {
+            let mut end = true;
+            for next_ti in &tris
+            {
+                if *next_ti == ti
+                {
+                    continue;
+                }
+                if self.triHasEdge(*next_ti, edge)
+                {
+                    // Find next edge
+                    let tri = self.triangles[*next_ti];
+                    let other_vert = tri.iter().find(
+                        |pi| **pi != edge.0 && **pi != edge.1).unwrap();
+                    edge = (p, *other_vert);
+
+                    ti = *next_ti;
+                    result.push(*next_ti);
+                    end = false;
+                    if self.triHasEdge(*next_ti, end_edge)
+                    {
+                        end = true;
+                    }
+                    break;
+                }
+            }
+            if end
+            {
+                break;
+            }
+        }
+        result
     }
 }
 
@@ -310,10 +372,116 @@ pub fn triBowyerWatson<I>(points: I, region: &Rect) -> Triangulation
     let final_tris: Vec<Triangle> = tris.drain().filter(
         |tri| tri[0] < point_count && tri[1] < point_count &&
             tri[2] < point_count).collect();
+
+    let mut edges: HashSet<Edge> = HashSet::new();
+    for tri in &final_tris
+    {
+        edges.insert(makeEdge(tri[0], tri[1]));
+        edges.insert(makeEdge(tri[1], tri[2]));
+        edges.insert(makeEdge(tri[2], tri[0]));
+    }
+
     // let final_tris: Vec<Triangle> = tris.drain().collect();
     Triangulation {
         points: ps.drain(0..point_count).collect(),
         triangles: final_tris,
+        edges: edges.drain().collect()
+    }
+}
+
+pub struct Voronoi
+{
+    points: Vec<Point>,
+    polygons: Vec<Polygon>,
+}
+
+impl Voronoi
+{
+    pub fn fromTriangulation(trian: Triangulation) -> Self
+    {
+        let circ_by_tri: Vec<Circle> = trian.triangles.iter().map(
+            |tri| circumCircle(
+                &trian.points[tri[0]], &trian.points[tri[1]], &trian.points[tri[2]])
+                .unwrap()).collect();
+
+        let mut polys = Vec::new();
+        for pi in 0..trian.points.len()
+        {
+            let tris = trian.trisWithPointOrdered(pi);
+            let mut cell = Polygon::with_capacity(tris.len());
+            for ti in tris
+            {
+                cell.push(circ_by_tri[ti].center.clone());
+            }
+            polys.push(cell);
+        }
+        Self { points: trian.points, polygons: polys }
+    }
+
+    pub fn debugSVGHeader(&self) -> String
+    {
+        let mut xmin = f64::INFINITY;
+        let mut xmax = f64::NEG_INFINITY;
+        let mut ymin = f64::INFINITY;
+        let mut ymax = f64::NEG_INFINITY;
+
+        for p in &self.points
+        {
+            if p.x < xmin
+            {
+                xmin = p.x;
+            }
+            if p.x > xmax
+            {
+                xmax = p.x;
+            }
+            if p.y < ymin
+            {
+                ymin = p.y;
+            }
+            if p.y > ymax
+            {
+                ymax = p.y;
+            }
+        }
+        format!(r#"<svg version="1.1" viewBox="{} {} {} {}"
+xmlns="http://www.w3.org/2000/svg">"#, xmin, ymin, xmax - xmin, ymax - ymin)
+    }
+
+    pub fn debugSVG(&self) -> String
+    {
+        let lines = vec![self.debugSVGHeader(), self.debugSVGPolygons(),
+                         self.debugSVGPoints(), self.debugSVGFooter()];
+        lines.join("\n")
+    }
+
+    pub fn debugSVGPolygons(&self) -> String
+    {
+        let mut lines = Vec::new();
+        for poly in &self.polygons
+        {
+            let coord_strs: Vec<String> = poly.iter().map(
+                |p| format!("{},{}", p.x, p.y)).collect();
+            let points_str = coord_strs.join(" ");
+            lines.push(format!(r#"<polygon points="{}" fill="none" stroke="black" />"#,
+                               points_str));
+        }
+        lines.join("\n")
+    }
+
+    pub fn debugSVGPoints(&self) -> String
+    {
+        let mut lines = Vec::new();
+        for p in &self.points
+        {
+            lines.push(drawPoint(p));
+        }
+        lines.join("\n")
+    }
+
+    pub fn debugSVGFooter(&self) -> String
+    {
+        String::from("</svg>")
     }
 }
 
