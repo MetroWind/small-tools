@@ -1,0 +1,10 @@
+[package]
+name = "voronoi"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+voronoi_img = { path = "../voronoi_img" }
+image = ">=0.24"
+anyhow = ">=1.0"
+clap = ">=4"

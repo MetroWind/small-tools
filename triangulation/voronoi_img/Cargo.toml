@@ -1,0 +1,9 @@
+[package]
+name = "voronoi_img"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+triangulation = { path = "../triangulation" }
+image = ">=0.24"
+rand = ">=0.8"
